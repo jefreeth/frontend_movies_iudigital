@@ -1,122 +1,80 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+import AdminSidebar from "./components/AdminSidebar";
+import DashboardHeader from "./components/DashboardHeader";
+import ResourceManager from "./components/ResourceManager";
+import { directorService } from "./api/services/directorService";
+import { generoService } from "./api/services/generoService";
+import { mediaService } from "./api/services/mediaService";
+import { productoraService } from "./api/services/productoraService";
+import { tipoService } from "./api/services/tipoService";
+
+const resources = {
+  generos: {
+    key: "generos",
+    label: "Géneros",
+    singular: "género",
+    service: generoService,
+    fields: [{ name: "nombre", label: "Nombre del género", placeholder: "Ej. Ciencia ficción" }],
+  },
+  tipos: {
+    key: "tipos",
+    label: "Tipos",
+    singular: "tipo",
+    service: tipoService,
+    fields: [{ name: "nombre", label: "Nombre del tipo", placeholder: "Ej. Película" }],
+  },
+  productoras: {
+    key: "productoras",
+    label: "Productoras",
+    singular: "productora",
+    service: productoraService,
+    fields: [{ name: "nombre", label: "Nombre de la productora", placeholder: "Ej. A24" }],
+  },
+  directores: {
+    key: "directores",
+    label: "Directores",
+    singular: "director",
+    service: directorService,
+    fields: [{ name: "nombre", label: "Nombre del director", placeholder: "Ej. Sofia Coppola" }],
+  },
+  medias: {
+    key: "medias",
+    label: "Medias",
+    singular: "media",
+    service: mediaService,
+    fields: [
+      { name: "nombre", label: "Nombre del media", placeholder: "Ej. Trailer principal" },
+      { name: "descripcion", label: "Descripción", placeholder: "Añade una breve descripción", type: "textarea", required: false },
+    ],
+  },
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [activeKey, setActiveKey] = useState("generos");
+  const [recordCounts, setRecordCounts] = useState({});
+  const activeResource = resources[activeKey];
+
+  const handleCountChange = (count) => {
+    setRecordCounts((current) => ({ ...current, [activeKey]: count }));
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <div className="app-shell">
+      <AdminSidebar activeKey={activeKey} onSelect={setActiveKey} />
+      <main className="main-content">
+        <DashboardHeader
+          activeResource={activeResource}
+          recordCount={recordCounts[activeKey] ?? 0}
+        />
+        <ResourceManager resource={activeResource} onCountChange={handleCountChange} />
+        <footer className="app-footer">
+          <span>IUDigital / Catálogo audiovisual</span>
+          <span>Panel interno · v1.0</span>
+        </footer>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
