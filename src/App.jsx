@@ -15,28 +15,43 @@ const resources = {
     label: "Géneros",
     singular: "género",
     service: generoService,
-    fields: [{ name: "nombre", label: "Nombre del género", placeholder: "Ej. Ciencia ficción" }],
+    fields: [{ name: "nombre", label: "nombre del género", placeholder: "Ej. Ciencia ficción" }],
   },
   tipos: {
     key: "tipos",
     label: "Tipos",
     singular: "tipo",
     service: tipoService,
-    fields: [{ name: "nombre", label: "Nombre del tipo", placeholder: "Ej. Película" }],
+    fields: [
+      { name: "nombre", label: "Nombre del tipo", placeholder: "Ej. Película" },
+      { name: "descripcion", label: "Descripción", placeholder: "Describe este tipo", type: "textarea", required: false },
+    ],
   },
   productoras: {
     key: "productoras",
     label: "Productoras",
     singular: "productora",
     service: productoraService,
-    fields: [{ name: "nombre", label: "Nombre de la productora", placeholder: "Ej. A24" }],
+    fields: [
+      { name: "nombre", label: "nombre de la productora", placeholder: "Ej. A24" },
+      { name: "estado", label: "Estado", type: "select", options: ["activo", "inactivo"] },
+      { name: "slogan", label: "Slogan", placeholder: "Ej. Historias que permanecen", required: false },
+      { name: "descripcion", label: "descripción", placeholder: "Describe la productora", type: "textarea", required: false },
+      { name: "fechaCreacion", label: "Fecha de creación", type: "datetime", form: false },
+      { name: "fechaActualizacion", label: "Fecha de actualización", type: "datetime", form: false },
+    ],
   },
   directores: {
     key: "directores",
     label: "Directores",
     singular: "director",
     service: directorService,
-    fields: [{ name: "nombre", label: "Nombre del director", placeholder: "Ej. Sofia Coppola" }],
+    fields: [
+      { name: "nombre", label: "nombre del director", placeholder: "Ej. Sofia Coppola" },
+      { name: "estado", label: "Estado", type: "select", options: ["activo", "inactivo"] },
+      { name: "fechaCreacion", label: "Fecha de creación", type: "datetime", form: false },
+      { name: "fechaActualizacion", label: "Fecha de actualización", type: "datetime", form: false },
+    ],
   },
   medias: {
     key: "medias",
@@ -44,8 +59,18 @@ const resources = {
     singular: "media",
     service: mediaService,
     fields: [
-      { name: "nombre", label: "Nombre del media", placeholder: "Ej. Trailer principal" },
-      { name: "descripcion", label: "Descripción", placeholder: "Añade una breve descripción", type: "textarea", required: false },
+      { name: "serial", label: "serial unico", placeholder: "Ej. MED-0001" },
+      { name: "titulo", label: "titulo", placeholder: "Ej. El padrino" },
+      { name: "sipnosis", label: "sinopsis", placeholder: "Escribe la sinopsis", type: "textarea" },
+      { name: "urlPelicula", label: "url", placeholder: "https://...", type: "url" },
+      { name: "imagenPortada", label: "imagen de portada", placeholder: "https://...", type: "url" },
+      { name: "anioEstreno", label: "anio de estreno", placeholder: "Ej. 2026", type: "number", min: 1888, max: 2100 },
+      { name: "generoPrincipal", label: "genero principal", type: "relation", optionsFrom: generoService, optionLabel: "nombre" },
+      { name: "director", label: "director", type: "relation", optionsFrom: directorService, optionLabel: "nombres" },
+      { name: "productora", label: "productora", type: "relation", optionsFrom: productoraService, optionLabel: "nombre" },
+      { name: "tipo", label: "tipo", type: "relation", optionsFrom: tipoService, optionLabel: "nombre" },
+      { name: "fechaCreacion", label: "Fecha de creacion", type: "datetime", form: false },
+      { name: "fechaActualizacion", label: "Fecha de actualización", type: "datetime", form: false },
     ],
   },
 };
@@ -58,7 +83,7 @@ function App() {
   const handleCountChange = (count) => {
     setRecordCounts((current) => ({ ...current, [activeKey]: count }));
   };
-
+0
   return (
     <div className="app-shell">
       <AdminSidebar activeKey={activeKey} onSelect={setActiveKey} />

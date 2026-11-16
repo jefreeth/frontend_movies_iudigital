@@ -255,8 +255,8 @@ button:disabled { cursor: wait; opacity: 0.65; }
 .panel-number { color: #d8ddcf; font-family: "DM Mono", monospace; font-size: 26px; font-weight: 500; }
 .form-fields { display: grid; gap: 17px; padding: 23px 0; }
 .field { display: grid; gap: 7px; color: var(--ink-soft); font-size: 11px; font-weight: 700; }
-.field input, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 5px; padding: 11px 12px; outline: 0; background: #fcfdf9; color: var(--ink); font-size: 12px; resize: vertical; transition: border-color .2s, box-shadow .2s; }
-.field input:focus, .field textarea:focus { border-color: var(--olive); box-shadow: 0 0 0 3px rgba(101, 115, 59, .12); }
+.field input, .field textarea, .field select { width: 100%; border: 1px solid var(--line); border-radius: 5px; padding: 11px 12px; outline: 0; background: #fcfdf9; color: var(--ink); font-size: 12px; resize: vertical; transition: border-color .2s, box-shadow .2s; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--olive); box-shadow: 0 0 0 3px rgba(101, 115, 59, .12); }
 .field input::placeholder, .field textarea::placeholder { color: #aab0a5; }
 .form-actions { display: flex; gap: 8px; }
 .table-heading { padding: 24px 25px 20px; }

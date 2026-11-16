@@ -19,6 +19,33 @@ function normalizeRecords(payload) {
   return [];
 }
 
+function getFormFields(fields) {
+  return fields.filter((field) => field.form !== false);
+}
+
+function getTableFields(fields) {
+  return fields.filter((field) => field.table !== false);
+}
+
+function getRecordFieldValue(record, field) {
+  const value = record[field.name];
+  if (field.type === "relation" && value && typeof value === "object") {
+    return getRecordId(value);
+  }
+  return value ?? "";
+}
+
+function formatFieldValue(field, value) {
+  if (!value) return "—";
+  if (field.type === "relation" && typeof value === "object") {
+    return value[field.optionLabel] ?? value.nombre ?? value.nombres ?? getRecordId(value);
+  }
+  if (field.type !== "datetime") return value;
+
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+}
+
 function ResourceManager({ resource, onCountChange }) {
   const [records, setRecords] = useState([]);
   const [formData, setFormData] = useState({});
@@ -26,6 +53,7 @@ function ResourceManager({ resource, onCountChange }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [feedback, setFeedback] = useState({ type: "", message: "" });
+  const [relationOptions, setRelationOptions] = useState({});
 
   const loadRecords = async () => {
     setIsLoading(true);
@@ -47,7 +75,22 @@ function ResourceManager({ resource, onCountChange }) {
   useEffect(() => {
     setEditingId(null);
     setFormData({});
+    setRelationOptions({});
     loadRecords();
+
+    const relationFields = getFormFields(resource.fields).filter((field) => field.optionsFrom);
+    Promise.all(
+      relationFields.map(async (field) => {
+        const payload = await field.optionsFrom.getAll();
+        const options = normalizeRecords(payload).map((record) => ({
+          value: getRecordId(record),
+          label: record[field.optionLabel] ?? record.nombre ?? record.nombres ?? getRecordId(record),
+        }));
+        return [field.name, options];
+      }),
+    )
+      .then((entries) => setRelationOptions(Object.fromEntries(entries)))
+      .catch(() => setFeedback({ type: "error", message: "No se pudieron cargar las relaciones." }));
   }, [resource.key]);
 
   const handleFieldChange = (event) => {
@@ -88,8 +131,8 @@ function ResourceManager({ resource, onCountChange }) {
   const startEditing = (record) => {
     setEditingId(getRecordId(record));
     setFormData(
-      resource.fields.reduce(
-        (values, field) => ({ ...values, [field.name]: record[field.name] ?? "" }),
+      getFormFields(resource.fields).reduce(
+        (values, field) => ({ ...values, [field.name]: getRecordFieldValue(record, field) }),
         {},
       ),
     );
@@ -142,7 +185,7 @@ function ResourceManager({ resource, onCountChange }) {
           </div>
 
           <div className="form-fields">
-            {resource.fields.map((field) => (
+            {getFormFields(resource.fields).map((field) => (
               <label className="field" key={field.name}>
                 <span>{field.label}</span>
                 {field.type === "textarea" ? (
@@ -154,6 +197,20 @@ function ResourceManager({ resource, onCountChange }) {
                     required={field.required !== false}
                     rows="4"
                   />
+                ) : field.type === "select" || field.type === "relation" ? (
+                  <select
+                    name={field.name}
+                    value={formData[field.name] ?? ""}
+                    onChange={handleFieldChange}
+                    required={field.required !== false}
+                  >
+                    <option value="">Selecciona una opción</option>
+                    {(field.type === "relation" ? relationOptions[field.name] ?? [] : field.options).map((option) => {
+                      const value = typeof option === "object" ? option.value : option;
+                      const label = typeof option === "object" ? option.label : option;
+                      return <option key={value} value={value}>{label}</option>;
+                    })}
+                  </select>
                 ) : (
                   <input
                     type={field.type || "text"}
@@ -162,6 +219,8 @@ function ResourceManager({ resource, onCountChange }) {
                     onChange={handleFieldChange}
                     placeholder={field.placeholder}
                     required={field.required !== false}
+                    min={field.min}
+                    max={field.max}
                   />
                 )}
               </label>
@@ -199,19 +258,24 @@ function ResourceManager({ resource, onCountChange }) {
             </div>
           ) : (
             <div className="table-wrap">
+              {(() => {
+                const tableFields = getTableFields(resource.fields);
+                return (
               <table>
                 <thead>
                   <tr>
-                    <th>Registro</th>
-                    {resource.fields.slice(1).map((field) => <th key={field.name}>{field.label}</th>)}
+                    {tableFields.map((field) => <th key={field.name}>{field.label}</th>)}
                     <th><span className="sr-only">Acciones</span></th>
                   </tr>
                 </thead>
                 <tbody>
                   {records.map((record) => (
                     <tr key={getRecordId(record)}>
-                      <td><strong>{record[resource.fields[0].name] || "Sin nombre"}</strong></td>
-                      {resource.fields.slice(1).map((field) => <td key={field.name}>{record[field.name] || "—"}</td>)}
+                      {tableFields.map((field, index) => (
+                        <td key={field.name}>
+                          {index === 0 ? <strong>{formatFieldValue(field, record[field.name])}</strong> : formatFieldValue(field, record[field.name])}
+                        </td>
+                      ))}
                       <td className="row-actions">
                         <button className="icon-button" type="button" onClick={() => startEditing(record)} aria-label="Editar registro" title="Editar">✎</button>
                         <button className="icon-button danger" type="button" onClick={() => handleDelete(record)} aria-label="Eliminar registro" title="Eliminar">×</button>
@@ -220,6 +284,8 @@ function ResourceManager({ resource, onCountChange }) {
                   ))}
                 </tbody>
               </table>
+                );
+              })()}
             </div>
           )}
         </div>
