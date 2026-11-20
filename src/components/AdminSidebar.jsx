@@ -4,6 +4,7 @@ const navigationItems = [
   { key: "productoras", label: "Productoras", icon: "P" },
   { key: "directores", label: "Directores", icon: "D" },
   { key: "medias", label: "Medias", icon: "M" },
+  { key: "catalogo", label: "Catálogo", icon: "C" },
 ];
 
 function AdminSidebar({ activeKey, onSelect }) {

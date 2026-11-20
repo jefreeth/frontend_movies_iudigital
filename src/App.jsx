@@ -3,6 +3,7 @@ import "./App.css";
 import AdminSidebar from "./components/AdminSidebar";
 import DashboardHeader from "./components/DashboardHeader";
 import ResourceManager from "./components/ResourceManager";
+import CatalogView from "./components/CatalogView";
 import { directorService } from "./api/services/directorService";
 import { generoService } from "./api/services/generoService";
 import { mediaService } from "./api/services/mediaService";
@@ -15,7 +16,10 @@ const resources = {
     label: "Géneros",
     singular: "género",
     service: generoService,
-    fields: [{ name: "nombre", label: "nombre del género", placeholder: "Ej. Ciencia ficción" }],
+    fields: [
+      { name: "nombre", label: "nombre del género", placeholder: "Ej. Ciencia ficción" },
+      {name: "descripcion", label: "descripción", placeholder: "Describe el género", type: "textarea", required: false },
+    ],
   },
   tipos: {
     key: "tipos",
@@ -34,7 +38,7 @@ const resources = {
     service: productoraService,
     fields: [
       { name: "nombre", label: "nombre de la productora", placeholder: "Ej. A24" },
-      { name: "estado", label: "Estado", type: "select", options: ["activo", "inactivo"] },
+      { name: "estado", label: "Estado", type: "select", options: ["Activo", "Inactivo"] },
       { name: "slogan", label: "Slogan", placeholder: "Ej. Historias que permanecen", required: false },
       { name: "descripcion", label: "descripción", placeholder: "Describe la productora", type: "textarea", required: false },
       { name: "fechaCreacion", label: "Fecha de creación", type: "datetime", form: false },
@@ -48,10 +52,14 @@ const resources = {
     service: directorService,
     fields: [
       { name: "nombre", label: "nombre del director", placeholder: "Ej. Sofia Coppola" },
-      { name: "estado", label: "Estado", type: "select", options: ["activo", "inactivo"] },
+      { name: "estado", label: "Estado", type: "select", options: ["Activo", "Inactivo"] },
       { name: "fechaCreacion", label: "Fecha de creación", type: "datetime", form: false },
       { name: "fechaActualizacion", label: "Fecha de actualización", type: "datetime", form: false },
     ],
+  },
+  catalogo: {
+    key: "catalogo",
+    label: "Catálogo",
   },
   medias: {
     key: "medias",
@@ -83,7 +91,6 @@ function App() {
   const handleCountChange = (count) => {
     setRecordCounts((current) => ({ ...current, [activeKey]: count }));
   };
-0
   return (
     <div className="app-shell">
       <AdminSidebar activeKey={activeKey} onSelect={setActiveKey} />
@@ -92,7 +99,11 @@ function App() {
           activeResource={activeResource}
           recordCount={recordCounts[activeKey] ?? 0}
         />
-        <ResourceManager resource={activeResource} onCountChange={handleCountChange} />
+        {activeKey === "catalogo" ? (
+          <CatalogView />
+        ) : (
+          <ResourceManager resource={activeResource} onCountChange={handleCountChange} />
+        )}
         <footer className="app-footer">
           <span>IUDigital / Catálogo audiovisual</span>
           <span>Panel interno · v1.0</span>
