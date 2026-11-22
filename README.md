@@ -1,16 +1,54 @@
-# React + Vite
+🎬 Catálogo Audiovisual - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplicación web full-stack desarrollada con React y Vite para la administración y consulta de un catálogo audiovisual (películas, géneros, directores, productoras y tipos). Este cliente web consume una API REST desplegada en la nube y conectada a MongoDB Atlas.
 
-Currently, two official plugins are available:
+🌐 Enlaces del Despliegue
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Frontend en Producción (Vercel): https://frontend-movies-iudigital.vercel.app/
 
-## React Compiler
+Backend API REST (Render): https://api-movies-iudigital.onrender.com/
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+🛠️ Tecnologías Utilizadas
 
-## Expanding the Oxlint configuration
+React (Biblioteca de interfaz de usuario)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Vite (Entorno de desarrollo y empaquetador)
+
+Axios (Cliente HTTP para consumo de la API REST)
+
+CSS / Estilos modernos (Diseño responsivo de interfaz)
+
+⚙️ Variables de Entorno
+
+Para ejecutar este proyecto de forma local o en producción, crea un archivo .env en la raíz del proyecto tomando como referencia la siguiente variable:
+
+VITE_API_URL=https://frontend-movies-iudigital.vercel.app/
+
+
+Nota: Si deseas conectarlo a un servidor local en desarrollo, reemplaza el valor por http://localhost:4000
+
+🚀 Instalación y Ejecución Local
+
+Clonar el repositorio:
+
+git clone https://github.com/[tu-usuario]/[nombre-repo-frontend].git
+cd [nombre-repo-frontend]
+
+
+Instalar las dependencias:
+
+npm install
+
+
+Configurar las variables de entorno:
+Crea un archivo .env en la raíz y agrega VITE_API_URL.
+
+Iniciar el servidor de desarrollo:
+
+npm run dev
+
+
+Compilar para producción:
+
+npm run build
+
